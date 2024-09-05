@@ -1,29 +1,7 @@
 import { useState } from "react";
 
 export default function App() {
-  const initalItems = [
-    {
-      id: 1,
-      name: "Apple",
-      quantity: 4,
-      isPacked: false,
-    },
-    {
-      id: 2,
-      name: "Milk",
-      quantity: 4,
-      isPacked: false,
-    },
-    {
-      id: 3,
-
-      name: "Juice",
-      quantity: 4,
-      isPacked: false,
-    },
-  ];
-
-  const [items, setItems] = useState(initalItems);
+  const [items, setItems] = useState([]);
 
   function handleAddItems(item) {
     setItems((items) => [...items, item]);
@@ -41,6 +19,14 @@ export default function App() {
     setItems((items) => items.filter((item) => item.id !== id));
   }
 
+  function handleSortingItems() {
+    setItems((items) => items.slice().sort((a, b) => b.isPacked - a.isPacked));
+  }
+
+  function handleRemovingAllItems() {
+    setItems([]);
+  }
+
   return (
     <div className="App">
       <ShoppingList
@@ -48,6 +34,8 @@ export default function App() {
         handleAddItems={handleAddItems}
         handlePackItems={handlePackItems}
         handleRemoveItem={handleRemoveItem}
+        handleSortingItems={handleSortingItems}
+        handleRemovingAllItems={handleRemovingAllItems}
       />
     </div>
   );
@@ -58,6 +46,8 @@ function ShoppingList({
   handleAddItems,
   handlePackItems,
   handleRemoveItem,
+  handleSortingItems,
+  handleRemovingAllItems,
 }) {
   return (
     <div>
@@ -67,6 +57,11 @@ function ShoppingList({
         items={items}
         handlePackItems={handlePackItems}
         handleRemoveItem={handleRemoveItem}
+      />
+      <Stats
+        items={items}
+        handleSortingItems={handleSortingItems}
+        handleRemovingAllItems={handleRemovingAllItems}
       />
     </div>
   );
@@ -148,5 +143,20 @@ function Item({ item, handlePackItems, handleRemoveItem }) {
         </div>
       )}
     </li>
+  );
+}
+
+function Stats({ items, handleSortingItems, handleRemovingAllItems }) {
+  const allItems = items.filter((item) => item.isPacked).length;
+  const percentage = allItems && (allItems / items.length) * 100;
+  return (
+    <div className="stats">
+      <div>
+        <p>Packed:{allItems}</p>
+        <p>u have packed {percentage}%</p>
+      </div>
+      <button onClick={handleSortingItems}>Sort</button>
+      <button onClick={handleRemovingAllItems}>Remove all</button>
+    </div>
   );
 }
